@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gray-100">
+  <div class="min-h-screen" :class="{ 'dark': isDarkMode }">
     <div class="container mx-auto py-10">
       <div class="flex items-center justify-between mb-8">
         <h1 class="text-3xl font-bold">Build Your Team</h1>
@@ -29,37 +29,33 @@
       <div v-else>
         <p class="text-center">Loading...</p>
       </div>
-      <div class="mt-6">
-        <button @click="previousPage" :disabled="currentPage === 1" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l">
-          Previous
-        </button>
-        <button @click="nextPage" :disabled="currentPage === totalPages" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-r">
-          Next
-        </button>
-      </div>
-
-      <!-- Team Modal -->
-      <div v-if="isModalOpen" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-        <div class="bg-white rounded shadow p-4">
-          <h2 class="text-lg font-bold mb-4">Team Members</h2>
-          <ul>
-            <li v-for="character in selectedCharacters" :key="character.id" class="mb-2">
-              <img :src="character.image" :alt="character.name" class="w-12 h-auto rounded mr-2">
-              <span class="text-gray-800">{{ character.name }}</span>
-              <button @click="removeCharacter(character.id)" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded-sm">Remove</button>
-            </li>
-          </ul>
-          <button @click="closeModal" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4">Close</button>
-        </div>
-      </div>
+      <Pagination :currentPage="currentPage" :totalPages="totalPages" @previous-page="previousPage" @next-page="nextPage" />
     </div>
+
+    <!-- Team Modal -->
+    <TeamModal
+      :selectedCharacters="selectedCharacters"
+      v-if="isModalOpen"
+      @remove-character="removeCharacter"
+      @close="closeModal"
+    />
+    
+    <button @click="toggleDarkMode" class="fixed bottom-4 right-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+      {{ isDarkMode ? 'Light Mode' : 'Dark Mode' }}
+    </button>
   </div>
 </template>
 
 <script>
 import axios from 'axios';
+import Pagination from './components/Pagination.vue';
+import TeamModal from './components/TeamModal.vue';
 
 export default {
+  components: {
+    Pagination,
+    TeamModal
+  },
   data() {
     return {
       characters: [],
@@ -67,7 +63,8 @@ export default {
       currentPage: 1,
       totalPages: 0,
       searchTerm: '',
-      isModalOpen: false
+      isModalOpen: false,
+      isDarkMode: false
     };
   },
   mounted() {
@@ -87,17 +84,15 @@ export default {
     },
     toggleSelection(character) {
       if (this.isSelected(character)) {
-        this.selectedCharacters = this.selectedCharacters.filter(c => c.id !== character.id);
+        this.selectedCharacters = this.selectedCharacters.filter(
+          selected => selected.id !== character.id
+        );
       } else {
-        if (this.selectedCharacters.length < 5) {
-          this.selectedCharacters.push(character);
-        } else {
-          alert('Maximum limit of 5 characters reached!');
-        }
+        this.selectedCharacters.push(character);
       }
     },
     isSelected(character) {
-      return this.selectedCharacters.some(c => c.id === character.id);
+      return this.selectedCharacters.some(selected => selected.id === character.id);
     },
     previousPage() {
       if (this.currentPage > 1) {
@@ -112,23 +107,12 @@ export default {
       }
     },
     searchCharacters() {
-      if (this.searchTerm) {
-        axios
-          .get(`https://rickandmortyapi.com/api/character/?name=${this.searchTerm}`)
-          .then(response => {
-            this.characters = response.data.results;
-            this.totalPages = response.data.info.pages;
-          })
-          .catch(error => {
-            console.error(error);
-          });
-      } else {
-        this.fetchCharacters();
-      }
+      this.currentPage = 1;
+      this.fetchCharacters();
     },
     clearSearch() {
       this.searchTerm = '';
-      this.fetchCharacters();
+      this.searchCharacters();
     },
     openModal() {
       this.isModalOpen = true;
@@ -136,8 +120,13 @@ export default {
     closeModal() {
       this.isModalOpen = false;
     },
-    removeCharacter(characterId) {
-      this.selectedCharacters = this.selectedCharacters.filter(c => c.id !== characterId);
+    removeCharacter(character) {
+      this.selectedCharacters = this.selectedCharacters.filter(
+        selected => selected.id !== character.id
+      );
+    },
+    toggleDarkMode() {
+      this.isDarkMode = !this.isDarkMode;
     }
   }
 };
@@ -147,4 +136,23 @@ export default {
 @import 'tailwindcss/base';
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
+
+.dark {
+  --tw-bg-opacity: 1 !important;
+  --tw-text-opacity: 1 !important;
+  background-color: #1f2937 !important;
+  color: #f9fafb !important;
+}
+
+.dark h2.text-lg {
+  color: #000000 !important;
+}
+
+.dark h2.text-2xl {
+  color: #000000 !important;
+}
+
+.dark span {
+  color: #000000 !important;
+}
 </style>
