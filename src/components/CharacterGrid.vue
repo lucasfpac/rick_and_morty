@@ -6,11 +6,13 @@
       </div>
       <div class="text-center">
         <h2 class="text-lg font-bold mb-2">{{ character.name }}</h2>
-        <p class="text-gray-600">{{ character.species }}</p>
-        <p class="text-gray-600">{{ character.status }}</p>
+        <p class="text-gray-600 font-bold">Name: {{ character.species }}</p>
+        <p class="text-gray-600">Status: {{ character.status }}</p>
+        <p class="text-gray-600">Species: {{ character.species }}</p>
+        <p class="text-gray-600">Location: {{ character.location.name }}</p>
       </div>
-      <div class="mt-4">
-        <button @click="changeColour(character.id)" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+      <div class="mt-4 flex justify-center">
+        <button @click="changeColour(character.id)" class="bg-brown-500 hover:bg-brown-700 text-white font-bold py-2 px-4 rounded">
           {{ isSelected[character.id] ? 'Selected' : 'Select' }}
         </button>
       </div>
