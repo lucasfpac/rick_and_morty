@@ -1,5 +1,5 @@
 <template>
-  <input type="text" :value="inputValue" @input="updateValue" :placeholder="placeholder" class=" text-black border border-gray-300 rounded-l px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+<input type="text" :value="inputValue" @input="updateValue" :placeholder="placeholder" class="text-gray-500 border border-gray-300 rounded-l px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
 </template>
 
 <script>
