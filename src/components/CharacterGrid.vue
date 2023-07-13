@@ -5,7 +5,7 @@
         <img :src="character.image" :alt="character.name" class="w-full h-auto rounded">
       </div>
       <div class="text-center">
-        <h2 class="text-gray-600 font-bold mb-2">Name: {{ character.name }}</h2>
+        <h2 class="text-gray-600 font-bold">Name: {{ character.name }}</h2>
         <p class="text-gray-600">Status: {{ character.status }}</p>
         <p class="text-gray-600">Species: {{ character.species }}</p>
         <p class="text-gray-600">Location: {{ character.location.name }}</p>
