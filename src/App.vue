@@ -6,7 +6,7 @@
         <div class="flex">
           <SearchInput v-model="searchTerm" @input="searchCharacters" class="rounded-l px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
         </div>
-        <TeamButton @click="openModal" />
+        <TeamButton :selected-character-count="selectedCharacters.length" @click="openModal" />
       </div>
       <CharacterGrid v-if="characters.length" :characters="characters" :isSelected="isSelected" @change-colour="changeColour" />
       <div v-else>
@@ -51,23 +51,19 @@ export default {
   },
   methods: {
     fetchCharacters() {
-      axios
-        .get(`https://rickandmortyapi.com/api/character/?page=${this.currentPage}`)
-        .then(response => {
-          this.characters = response.data.results;
-          this.totalPages = response.data.info.pages;
-
-          // Update isSelected status for the characters
-          this.isSelected = this.characters.reduce((acc, character) => {
-            acc[character.id] = this.selectedCharacters.some(
-              selectedCharacter => selectedCharacter.id === character.id
-            );
-            return acc;
-          }, {});
-        })
-        .catch(error => {
-          console.error(error);
-        });
+    axios
+      .get(`https://rickandmortyapi.com/api/character/?page=${this.currentPage}&page_size=21`)
+      .then((response) => {
+        this.characters = response.data.results;
+        this.isSelected = this.characters.reduce((acc, character) => {
+          acc[character.id] = false;
+          return acc;
+        }, {});
+        this.totalPages = response.data.info.pages;
+      })
+      .catch((error) => {
+        console.error(error);
+      });
     },
     changeColour(characterId) {
       this.isSelected[characterId] = !this.isSelected[characterId];
